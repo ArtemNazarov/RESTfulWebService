@@ -1,0 +1,15 @@
+
+WebServiceTask/target/classes/META-INF/persistence.xml
+*.class
+*.lst
+WebServiceTask/target/endorsed/javaee-endorsed-api-7.0.jar
+WebServiceTask/target/maven-archiver/pom.properties
+WebServiceTask/target/WebServiceTask-1.0-SNAPSHOT/index.html
+WebServiceTask/target/WebServiceTask-1.0-SNAPSHOT/WEB-INF/classes/.netbeans_automatic_build
+WebServiceTask/src/main/webapp/angular/angular.js
+WebServiceTask/src/main/webapp/css/style.css
+WebServiceTask/src/main/webapp/ei.cfg.txt
+WebServiceTask/src/main/webapp/js/app.js
+WebServiceTask/src/main/webapp/js/controllers/todoCtrl.js
+WebServiceTask/src/main/webapp/js/services/todoStorage.js
+WebServiceTask/target/WebServiceTask-1.0-SNAPSHOT/WEB-INF/glassfish-resources.xml

@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>RESTful client</title>
+    <!--JQuery-->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <!--Popper.js-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+    <!--Bootstrap stylesheet-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+    <!--Bootstrap js-->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+    <!--Bootstrap table stylesheet-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.css">
+    <!--Bootstrap table js-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
+    <!--jQuery-validate-->
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.12/jquery.mask.min.js"></script>
+    <script type="text/javascript">
+        $().ready(function() {
+            $('#insertingForm').validate({
+                rules: {
+                    phone: {
+                        required: true,
+                    },
+                    password: {
+                        required: true,
+                        minlength: 5
+                    },
+                    confirmPassword: {
+                        equalTo: '#passwordInserting'
+                    }
+                },
+                messages: {
+                    phone: {
+                        required: 'Please enter a phone',
+                    },
+                    password: {
+                        required: 'Please enter a password',
+                        minlength: 'Your password must be at least 5 characters long'
+                    },
+                    confirmPassword: {
+                        equalTo: 'Please enter the same password as in the previous field'
+                    }
+                },
+                errorPlacement: function(error, element) {
+                    // Add the `help-block` class to the error element
+                    error.addClass('invalid-feedback');
+                    if (element.prop('type') === 'checkbox') {
+                        error.insertAfter(element.parent('label'));
+                    } else {
+                        error.insertAfter(element);
+                    }
+                },
+                highlight: function(element, errorClass, validClass) {
+                    $(element).addClass('is-invalid').removeClass('is-valid');
+                },
+                unhighlight: function(element, errorClass, validClass) {
+                    $(element).addClass('is-valid').removeClass('is-invalid');
+                }
+            });
+            $('#modifyForm').validate({
+                rules: {
+                    phone: {
+                        required: true,
+                    },
+                    password: {
+                        required: true,
+                        minlength: 5
+                    },
+                    confirmPassword: {
+                        equalTo: '#passwordModify'
+                    }
+                },
+                messages: {
+                    phone: {
+                        required: 'Please enter a phone',
+                    },
+                    password: {
+                        required: 'Please enter a password',
+                        minlength: 'Your password must be at least 5 characters long'
+                    },
+                    confirmPassword: {
+                        equalTo: 'Please enter the same password as in the previous field'
+                    }
+                },
+                errorPlacement: function(error, element) {
+                    error.addClass('invalid-feedback');
+                    if (element.prop('type') === 'checkbox') {
+                        error.insertAfter(element.parent('label'));
+                    } else {
+                        error.insertAfter(element);
+                    }
+                },
+                highlight: function(element, errorClass, validClass) {
+                    $(element).addClass('is-invalid').removeClass('is-valid');
+                },
+                unhighlight: function(element, errorClass, validClass) {
+                    $(element).addClass('is-valid').removeClass('is-invalid');
+                }
+            });
+            $('#removingForm').validate({
+                rules: {
+                    id: {
+                        required: true,
+                        number: true,
+                        min: 1
+                    }
+                },
+                messages: {
+                    required: 'Please enter an ID',
+                    id: 'Please enter a valid number',
+                    min: 'The value must be greater than 0'
+                },
+                highlight: function(element, errorClass, validClass) {
+                    $(element).addClass('is-invalid').removeClass('is-valid');
+                },
+                unhighlight: function(element, errorClass, validClass) {
+                    $(element).addClass('is-valid').removeClass('is-invalid');
+                }
+            });
+
+            $('#findForm').validate({
+                rules: {
+                    id: 'number'
+                },
+                messages: {
+                    id: 'Please enter a valid number'
+                }
+            })
+        });
+
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Indie+Flower');
+        @import url('https://fonts.googleapis.com/css?family=Lato');
+        @import url('https://fonts.googleapis.com/css?family=Roboto');
+        h1 {
+            font-family: 'Indie Flower', cursive;
+            text-align: center;
+        }
+
+    </style>
+</head>
+
+<body>
+    <h1>RESTful client</h1>
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item"> <a class="nav-link active" id="add-tab" data-toggle="tab" href="#insertPane" role="tab" aria-expanded="true">Inserting</a> </li>
+        <li class="nav-item"> <a class="nav-link" id="modify-tab" data-toggle="tab" href="#modifyPane" role="tab">Modification</a> </li>
+        <li class="nav-item"> <a class="nav-link" id="delete-tab" data-toggle="tab" href="#removingPane" role="tab">Removing</a> </li>
+        <li class="nav-item"> <a class="nav-link" id="show-tab" data-toggle="tab" href="#findPane" role="tab">Find</a> </li>
+    </ul>
+    <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="insertPane" role="tabpanel">
+            <br>
+            <div id="insertingBlock" class="jumbotron">
+                <div class="container">
+                    <form id="insertingForm" action="#" role="form" class="infoForm" novalidate>
+                        <div class="form-group">
+                            <label for="usernameInputInserting">Username</label>
+                            <input type="text" class="form-control" id="usernameInserting" name="username" placeholder="Username" required> </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="passwordInserting">Password</label>
+                                <input type="password" class="form-control" minlength="5" id="passwordInserting" name="password" placeholder="Password" required> </div>
+                            <div class="form-group col-md-6">
+                                <label for="confirmPasswordInserting">Confirm Password</label>
+                                <input type="password" class="form-control" id="confirmPasswordInserting" name="confirmPassword" placeholder="Confirm password" required> </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label for="surnameInserting">Surname</label>
+                                <input type="text" class="form-control" name="surname" id="surnameInserting" placeholder="Surname"> </div>
+                            <div class="form-group col-md-4">
+                                <label for="nameInserting">Name</label>
+                                <input type="text" class="form-control" name="name" id="nameInserting" placeholder="Name" required> </div>
+                            <div class="form-group col-md-4">
+                                <label for="patronymicInserting" class="control-label">Patronymic</label>
+                                <input type="text" class="form-control" id="patronymicInserting" name="patronymic" placeholder="Patronymic"> </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="addressInserting">Address</label>
+                                <input type="text" class="form-control" name="address" id="addressInserting" placeholder="Address"> </div>
+                            <div class="form-group col-md-6">
+                                <label for="phoneInserting">Phone</label>
+                                <input type="tel" class="form-control" name="phone" maxlength="12" id="phoneInserting" placeholder="Phone ___-___-____" name="phone" required>
+                            </div>
+                        </div>
+                        <button type="submit" id="addUserButton" class="btn btn-primary">Add</button>
+                    </form>
+                    <br>
+                    <button id="showAllButtonInserting" class="btn btn-primary">Show all</button>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="modifyPane" role="tabpanel">
+            <br>
+            <div id="modifyBlock" class="jumbotron">
+                <div class="container">
+                    <form id="modifyForm" role="form" class="infoForm" novalidate>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="usernameModify">Username</label>
+                                <input type="text" class="form-control" id="usernameModify" name="username" placeholder="Username" required>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="idModify">ID</label>
+                                <input type="text" class="form-control" id="idModify" name="username" placeholder="Username" disabled>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="passwordModify">Password</label>
+                                <input type="password" class="form-control" minlength="5" id="passwordModify" name="password" placeholder="Password" required> </div>
+                            <div class="form-group col-md-6">
+                                <label for="confirmPasswordModify">Confirm Password</label>
+                                <input type="password" class="form-control" id="confirmPasswordModify" name="confirmPassword" placeholder="Confirm password" required> </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label for="surnameModify">Surname</label>
+                                <input type="text" class="form-control" name="surname" id="surnameModify" placeholder="Surname"> </div>
+                            <div class="form-group col-md-4">
+                                <label for="nameModify">Name</label>
+                                <input type="text" class="form-control" name="name" id="nameModify" placeholder="Name" required> </div>
+                            <div class="form-group col-md-4">
+                                <label for="patronymicModify" class="control-label">Patronymic</label>
+                                <input type="text" class="form-control" id="patronymicModify" name="patronymic" placeholder="Patronymic"> </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="addressModify">Address</label>
+                                <input type="text" class="form-control" name="address" id="addressModify" placeholder="Address"> </div>
+                            <div class="form-group col-md-6">
+                                <label for="phoneModify">Phone</label>
+                                <input type="tel" class="form-control" name="phone" maxlength="12" id="phoneModify" placeholder="Phone ___-___-____" required> </div>
+                        </div>
+                        <button type="submit" id="modifyUserButton" class="btn btn-primary">Change</button>
+                    </form>
+                    <br>
+                    <button id="showAllButtonModify" class="btn btn-primary">Show all</button>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="removingPane" role="tabpanel">
+            <div class="jumbotron">
+                <div class="container">
+                    <form id="removingForm">
+                        <div class="form-group">
+                            <label for="idRemoving">ID</label>
+                            <input type="number" class="form-control" id="idRemoving" name="id" placeholder="ID" required> </div>
+                        <button type="submit" id="removingButton" class="btn btn-primary">Remove</button>
+                    </form>
+                    <br>
+                    <button id="showAllButtonRemoving" class="btn btn-primary">Show all</button>
+                </div>
+
+
+            </div>
+        </div>
+        <div class="tab-pane fade" id="findPane" role="tabpanel">
+            <div class="jumbotron">
+                <div class="container">
+                    <form id="findForm">
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label for="findSelect">Select search type</label>
+                                <select name="selectionType" id="findSelect" class="form-control">
+                                    <option value="byID">Find by id</option>
+                                    <option value="byLogin">Find by login</option>
+                                </select>
+                            </div>
+                            <div id="idFindBlock" class="form-group col-md-4">
+                                <label for="idFind">ID</label>
+                                <input id="idFind" name="id" type="number" min="1" class="form-control">
+                            </div>
+                            <div id="loginFindBlock" class="form-group col-md-4" hidden>
+                                <label for="loginFind">Login</label>
+                                <input id="loginFind" name="login" type="text" class="form-control">
+                            </div>
+                        </div>
+                        <button id="showButton" class="btn btn-primary" type="submit">Show</button>
+                    </form>
+                    <br>
+                    <button id="showAllButtonShowing" class="btn btn-primary">Show all</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <table id="usersTable" class="table table-hover">
+        <thead>
+            <tr>
+                <th data-field="id">ID</th>
+                <th data-field="login">Login</th>
+                <th data-field="password">Password</th>
+                <th data-field="surname">Surname</th>
+                <th data-field="name">Name</th>
+                <th data-field="patronymic">Patronymic</th>
+                <th data-field="phone">Phone</th>
+                <th data-field="address">Address</th>
+            </tr>
+        </thead>
+    </table>
+    <script type="text/javascript">
+        $('#phoneInserting').mask('999-999-9999', {
+            placeholder: '___-___-____'
+        });
+
+        $('#phoneModify').mask('999-999-9999', {
+            placeholder: '___-___-____'
+        });
+
+        document.getElementById('insertingForm').onsubmit = function() {
+            var login = document.getElementById('usernameInserting').value;
+            var passwordInput = document.getElementById('confirmPasswordInserting').value;
+            var surname = document.getElementById('surnameInserting').value;
+            var name = document.getElementById('nameInserting').value;
+            var patronymic = document.getElementById('patronymicInserting').value;
+            var address = document.getElementById('addressInserting').value;
+            var phone = document.getElementById('phoneInserting').value;
+            var password = [];
+
+            for (i = 0; i < passwordInput.length; i++) {
+                password[i] = passwordInput[i].charCodeAt(0);
+            }
+
+            dataJSON = {
+                address: address,
+                login: login,
+                password: password,
+                surname: surname,
+                name: name,
+                patronymic: patronymic,
+                phone: phone
+            };
+            data = JSON.stringify(dataJSON);
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', 'webresources/users/findByLogin/' + login, true);
+            xhr.onreadystatechange = function() {
+                onCheckLogin(xhr, data, 'POST', onSuccessInserting);
+            }
+            xhr.send(null);
+
+        }
+
+
+
+        function onCheckLogin(xhr, data, method, onSuccess) {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    var getData = JSON.parse(xhr.responseText);
+                    if ((Array.isArray(getData)) && (getData.length === 0)) {
+                        createSendHttpRequest('webresources/users/', onSuccess, method, data);
+                        createHttpRequest('webresources/users/', onGetData, 'GET');
+                    } else {
+                        alert('Entered login exists in database!')
+                    }
+                } else {
+                    alert(xhr.status + ': ' + xhr.statusText);
+                }
+            }
+        }
+
+        document.getElementById('modifyForm').onsubmit = function() {
+            var id = document.getElementById('idModify').value;
+            if ((id === '') || (id === null)) {
+                alert('You must select a user!');
+            } else {
+                var login = document.getElementById('usernameModify').value;
+                var passwordInput = document.getElementById('confirmPasswordModify').value;
+                var surname = document.getElementById('surnameModify').value;
+                var name = document.getElementById('nameModify').value;
+                var patronymic = document.getElementById('patronymicModify').value;
+                var address = document.getElementById('addressModify').value;
+                var phone = document.getElementById('phoneModify').value;
+                var password = [];
+                for (i = 0; i < passwordInput.length; i++) {
+                    password[i] = passwordInput[i].charCodeAt(0);
+                }
+
+                dataJSON = {
+                    address: address,
+                    login: login,
+                    password: password,
+                    surname: surname,
+                    name: name,
+                    patronymic: patronymic,
+                    phone: phone
+                };
+                data = JSON.stringify(dataJSON);
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', 'webresources/users/findByLogin/' + login, true);
+                xhr.onreadystatechange = function() {
+                    onCheckLogin(xhr, data, 'PUT', onSuccessModify);
+                }
+                xhr.send(null);
+                createSendHttpRequest('webresources/users/' + id, onSuccessModify, 'PUT', data);
+                createHttpRequest('webresources/users/', onGetData, 'GET');
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function(event) {
+            $('#usersTable').bootstrapTable({
+                onClickRow: function(row, $element, field) {
+                    $('.table-success').removeClass('table-success');
+                    $($element).addClass('table-success');
+                    $('#idModify').val($element[0].cells[0].textContent);
+                    $('#usernameModify').val($element[0].cells[1].textContent);
+                    $('#passwordModify').val($element[0].cells[2].textContent);
+                    $('#confirmPasswordModify').val($element[0].cells[2].textContent);
+                    $('#surnameModify').val($element[0].cells[3].textContent);
+                    $('#nameModify').val($element[0].cells[4].textContent);
+                    $('#patronymicModify').val($element[0].cells[5].textContent);
+                    $('#phoneModify').val($element[0].cells[6].textContent);
+                    $('#addressModify').val($element[0].cells[7].textContent);
+                    $('#idRemoving').val($element[0].cells[0].textContent);
+                }
+            });
+        });
+
+        document.getElementById('removingForm').onsubmit = function() {
+            var id = document.getElementById('idRemoving').value;
+            if ((id === '') || (id === null)) {
+                alert('You must select a user!');
+            } else {
+                createHttpRequest('webresources/users/' + id, onSuccessRemoving, 'DELETE');
+                createHttpRequest('webresources/users/', onGetData, 'GET');
+            }
+        }
+
+        document.getElementById('findForm').onsubmit = function() {
+            var select = document.getElementById('findSelect');
+            if (select.options[select.selectedIndex].value === 'byID') {
+                id = document.getElementById('idFind').value;
+                if ((id === '') || (id === null)) {
+                    alert('You must enter an id!');
+                } else {
+                    createHttpRequest('webresources/users/' + id, onGetData, 'GET');
+                }
+            } else {
+                login = document.getElementById('loginFind').value;
+                if ((login === '') || (login === null)) {
+                    alert('You must enter a login!');
+                } else {
+                    createHttpRequest('webresources/users/findByLogin/' + login, onGetData, 'GET');
+                }
+            }
+        }
+
+        document.getElementById('findSelect').onchange = function() {
+            if (this.options[this.selectedIndex].value == 'byID') {
+                document.getElementById('idFindBlock').hidden = false;
+                document.getElementById('loginFindBlock').hidden = true;
+            } else {
+                document.getElementById('idFindBlock').hidden = true;
+                document.getElementById('loginFindBlock').hidden = false;
+            }
+        }
+        document.getElementById('showAllButtonInserting').onclick = function() {
+            createHttpRequest('webresources/users/', onGetData, 'GET');
+        }
+
+        document.getElementById('showAllButtonModify').onclick = function() {
+            createHttpRequest('webresources/users/', onGetData, 'GET');
+        }
+
+        document.getElementById('showAllButtonRemoving').onclick = function() {
+            createHttpRequest('webresources/users/', onGetData, 'GET');
+        }
+
+        document.getElementById('showAllButtonShowing').onclick = function() {
+            createHttpRequest('webresources/users/', onGetData, 'GET');
+        }
+
+
+        function onSuccessInserting(xhr) {
+            if (xhr.readyState === 4) {
+                if ((xhr.status === 200) || (xhr.status === 204)) {
+                    alert('Data successfully inserted');
+                } else {
+                    alert(xhr.status + ': ' + xhr.statusText);
+                }
+            }
+        }
+
+        function onSuccessModify(xhr) {
+            if (xhr.readyState === 4) {
+                if ((xhr.status === 200) || (xhr.status === 204)) {
+                    alert('Data successfully modified');
+                } else {
+                    alert(xhr.status + ': ' + xhr.statusText);
+                }
+            }
+        }
+
+        function onSuccessRemoving(xhr) {
+            if (xhr.readyState === 4) {
+                if ((xhr.status === 200) || (xhr.status === 204)) {
+                    alert('Data successfully removed');
+                } else {
+                    alert(xhr.status + ': ' + xhr.statusText);
+                }
+            }
+        }
+
+        $.validator.setDefaults({
+            submitHandler: function() {}
+        });
+
+        function binArrayToString(bin) {
+            var result = "";
+            for (var i = 0; i < bin.length; i++) {
+                result += String.fromCharCode(parseInt(bin[i], 10));
+            }
+            return result;
+        }
+
+        function onGetData(xhr) {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    var data = JSON.parse(xhr.responseText);
+                    if (Array.isArray(data)) {
+                        if (data.length > 0) {
+                            data.forEach(function(item, index, array) {
+                                var passwordBin = item.password;
+                                item.password = binArrayToString(passwordBin);
+                            });
+                        } else {
+                            alert('Nothing found on your request!');
+                        }
+                    } else {
+                        var passwordBin = data.password;
+                        data.password = binArrayToString(passwordBin);
+                    }
+                    $(function() {
+                        $('#usersTable').bootstrapTable('removeAll');
+                        $('#usersTable').bootstrapTable('append', data);
+                    });
+                } else {
+                    alert(xhr.status + ': ' + xhr.statusText);
+                }
+            }
+        }
+
+        function createHttpRequest(URL, onGetResponse, method) {
+            var xhr = new XMLHttpRequest();
+            xhr.open(method, URL, true);
+            xhr.onreadystatechange = function() {
+                onGetResponse(xhr);
+            }
+            xhr.send(null);
+        }
+
+        function createSendHttpRequest(URL, onGetResponse, method, send) {
+            var xhr = new XMLHttpRequest();
+            xhr.open(method, URL, true);
+            xhr.onreadystatechange = function() {
+                onGetResponse(xhr);
+            }
+            xhr.setRequestHeader('Content-type', 'application/json')
+            xhr.send(send);
+        }
+
+    </script>
+</body>
+
+</html>

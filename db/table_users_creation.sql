@@ -1,0 +1,20 @@
+USE webapp
+GO
+
+IF OBJECT_ID('dbo.Users', 'U') IS NOT NULL
+DROP TABLE dbo.Users
+GO
+
+CREATE TABLE Users
+(
+	ID bigint IDENTITY (1, 1) NOT NULL,
+	LOGIN varchar(100) UNIQUE NOT NULL,
+	PASSWORD varbinary(100) NOT NULL,
+	SURNAME nvarchar(40),
+	NAME nvarchar(40) NOT NULL,
+	PATRONYMIC nvarchar(40),
+	PHONE varchar(20),
+	ADDRESS nvarchar(50) NOT NULL,
+	CONSTRAINT PK_ID PRIMARY KEY (ID)
+)
+GO
